@@ -1,4 +1,6 @@
 
+  data "aws_caller_identity" "current" {}
+  
   resource "aws_elastic_beanstalk_application" "tf_ebs_app" {
     name        = var.application_name
   } 
@@ -60,7 +62,7 @@ setting {
     setting {
         namespace = "aws:autoscaling:launchconfiguration"
         name      = "IamInstanceProfile"
-        value     = "arn:aws:iam::969446871231:instance-profile/EC2instanceprofilerole"
+        value     = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:instance-profile/EC2instanceprofilerole"
     }
     
     setting {
@@ -77,7 +79,7 @@ setting {
     setting {
         namespace = "aws:elasticbeanstalk:environment"
         name      = "ServiceRole"
-        value     = "arn:aws:iam::969446871231:role/service-role/aws-elasticbeanstalk-service-role"
+        value     = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/service-role/aws-elasticbeanstalk-service-role"
 }
       
     setting {
@@ -104,59 +106,3 @@ setting {
     
   }
 
-
-  ## Create the Elastic Beanstalk service role
-#resource "aws_iam_role" "elasticbeanstalk_service_role" {
-  #name               = "tf-elasticbeanstalk-service-role"
-  #assume_role_policy = data.aws_iam_policy_document.elasticbeanstalk_service_role_policy.json
-#}
-
-# Define the trust policy for the Elastic Beanstalk service role
-#data "aws_iam_policy_document" "elasticbeanstalk_service_role_policy" {
- # statement {
-   # actions = ["sts:AssumeRole"]
-   # principals {
-     # type        = "Service"
-      #identifiers = ["elasticbeanstalk.amazonaws.com"]
-    #}
-  #}
-#}
-
-# Attach the AWSElasticBeanstalkRoleCore 
-#resource "aws_iam_role_policy_attachment" "eb_Role_Core" {
-  #role       = aws_iam_role.elasticbeanstalk_service_role.name
-  #policy_arn = "arn:aws:iam::aws:policy/service-role/AWSElasticBeanstalkRoleCore"
-#}
-
-# Attach the AWSElasticBeanstalkManagedUpdatesCustomerRolePolicy managed policy
-#resource "aws_iam_role_policy_attachment" "eb_role_policy_attachment" {
-  #role       = aws_iam_role.elasticbeanstalk_service_role.name
-  ##policy_arn = "arn:aws:iam::aws:policy/AWSElasticBeanstalkManagedUpdatesCustomerRolePolicy"
-
-#}
-# Create the IAM role for the instance profile
-#resource "aws_iam_role" "iam_instance_role" {
-  #name               = "tf-iam-instance-role"
-  #assume_role_policy = data.aws_iam_policy_document.iam_instance_role_policy.json
-#}
-
-# Define the trust policy for the IAM role
-#data "aws_iam_policy_document" "iam_instance_role_policy" {
-  #statement {
-    #actions = ["sts:AssumeRole"]
-    #principals {
-     # type        = "Service"
-      #identifiers = ["ec2.amazonaws.com"]
-    #}
-  #}
-#}
-
-# Attach the AWSElasticBeanstalkWebTier managed policy
-#resource "aws_iam_role_policy_attachment" "web_tier" {
-  ###}
-
-# Create the instance profile and associate it with the IAM role
-#resource "aws_iam_instance_profile" "iam_instance_profile" {
-  #name = "iam-instance-profile"
-  #role = aws_iam_role.iam_instance_role.name
-#}
