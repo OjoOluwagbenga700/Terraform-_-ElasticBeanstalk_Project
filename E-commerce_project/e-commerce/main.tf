@@ -9,9 +9,7 @@ module "vpc" {
   private_subnet_az1_cidr = var.private_subnet_az1_cidr
   private_subnet_az2_cidr = var.private_subnet_az2_cidr
 }
-
 #Create Natgateway and Private route table 
-
 module "nat_gateway" {
   source                = "../modules/natgateway"
   vpc_id                = module.vpc.vpc_id
@@ -20,22 +18,17 @@ module "nat_gateway" {
   igw                   = module.vpc.igw
   private_subnet_az1_id = module.vpc.private_subnet_az1_id
   private_subnet_az2_id = module.vpc.private_subnet_az2_id
-
 }
-
 #create security groups
 module "security_group" {
   source       = "../modules/securitygroup"
   project_name = module.vpc.project_name
   vpc_id       = module.vpc.vpc_id
 }
-
-
 module "s3" {
   source      = "../modules/s3"
   bucket_name = var.bucket_name
 }
-
 module "elasticbeanstalk" {
   source                    = "../modules/elasticbeanstalk"
   application_name          = var.application_name
